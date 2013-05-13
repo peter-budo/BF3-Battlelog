@@ -21,19 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ForumData implements Parcelable {
-
-    // Attributes
-    private long forumId, categoryId, latestPostDate, latestPostThreadId,
-            latestPostId;
+    private long forumId, categoryId, latestPostDate, latestPostThreadId, latestPostId;
     private long numPosts, numThreads, numPages;
     private String title, description;
     private String latestThreadTitle, latestPostUsername;
     private List<ForumThreadData> threads;
 
-    // Constructs
-    public ForumData(String fTitle, String fDescription, long nPosts,
-                     long nThreads, long nPages, List<ForumThreadData> aThreads) {
-
+    public ForumData(String fTitle, String fDescription, long nPosts, long nThreads, long nPages, List<ForumThreadData> aThreads) {
         forumId = 0;
         categoryId = 0;
         latestPostDate = 0;
@@ -42,22 +36,14 @@ public class ForumData implements Parcelable {
         numPosts = nPosts;
         numThreads = nThreads;
         numPages = nPages;
-
         title = fTitle;
         description = fDescription;
-
         threads = aThreads;
-
     }
 
-    public ForumData(
-
-            long fId, long cId, long lpDate, long lpTId, long lpId, long nPosts,
+    public ForumData(long fId, long cId, long lpDate, long lpTId, long lpId, long nPosts,
             long nThreads, long nPages, String t, String d, String ltTitle,
-            String lpUser
-
-    ) {
-
+            String lpUser) {
         forumId = fId;
         categoryId = cId;
         latestPostDate = lpDate;
@@ -66,18 +52,14 @@ public class ForumData implements Parcelable {
         numPosts = nPosts;
         numThreads = nThreads;
         numPages = nPages;
-
         title = t;
         description = d;
         latestThreadTitle = ltTitle;
         latestPostUsername = lpUser;
-
-        threads = (List<ForumThreadData>) new ArrayList<ForumThreadData>();
-
+        threads = new ArrayList<ForumThreadData>();
     }
 
     public ForumData(Parcel in) {
-
         forumId = in.readLong();
         categoryId = in.readLong();
         latestPostDate = in.readLong();
@@ -91,12 +73,9 @@ public class ForumData implements Parcelable {
         description = in.readString();
         latestThreadTitle = in.readString();
         latestPostUsername = in.readString();
-
         in.readTypedList(threads, ForumThreadData.CREATOR);
-
     }
 
-    // Getters
     public long getForumId() {
         return forumId;
     }
@@ -156,7 +135,6 @@ public class ForumData implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
         dest.writeLong(forumId);
         dest.writeLong(categoryId);
         dest.writeLong(latestPostDate);
@@ -165,18 +143,14 @@ public class ForumData implements Parcelable {
         dest.writeLong(numPosts);
         dest.writeLong(numThreads);
         dest.writeLong(numPages);
-
         dest.writeString(title);
         dest.writeString(description);
         dest.writeString(latestThreadTitle);
         dest.writeString(latestPostUsername);
-
         dest.writeTypedList(threads);
-
     }
 
     public static final Parcelable.Creator<ForumData> CREATOR = new Parcelable.Creator<ForumData>() {
-
         public ForumData createFromParcel(Parcel in) {
             return new ForumData(in);
         }
@@ -184,7 +158,5 @@ public class ForumData implements Parcelable {
         public ForumData[] newArray(int size) {
             return new ForumData[size];
         }
-
     };
-
 }

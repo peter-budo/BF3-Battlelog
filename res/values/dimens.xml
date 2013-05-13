@@ -19,4 +19,5 @@
   <dimen name="text_xxl">48sp</dimen>
 
   <dimen name="min_size">200dp</dimen>
+  <dimen name="size_one_hundred">100dp</dimen>
 </resources>

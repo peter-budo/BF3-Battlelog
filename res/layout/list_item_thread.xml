@@ -14,7 +14,7 @@
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="wrap_content"
-                android:layout_height="100dp">
+                android:layout_height="@dimen/size_one_hundred">
 
   <View
       android:id="@+id/bar_official"
@@ -29,7 +29,7 @@
       android:layout_height="wrap_content"
       android:layout_centerVertical="true"
       android:layout_toRightOf="@id/bar_official"
-      android:padding="5dp">
+      android:padding="@dimen/padding_small">
 
     <com.ninetwozero.bf3droid.datatype.MarqueeTextView
         android:id="@+id/string_title"
@@ -63,8 +63,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/string_post_last"
         android:text="@string/info_xml_threadinfo"
-        android:textColor="#AAAAAA"
-        android:textSize="12sp"/>
+        android:textColor="@color/forum_thread_grey"
+        android:textSize="@dimen/text_xxs"/>
   </RelativeLayout>
 
 </RelativeLayout>

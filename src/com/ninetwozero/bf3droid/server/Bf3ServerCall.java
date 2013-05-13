@@ -3,8 +3,8 @@ package com.ninetwozero.bf3droid.server;
 import android.util.Log;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.ninetwozero.bf3droid.server.SimpleHttpCaller.SimpleHttpCallerCallback;
+import com.ninetwozero.bf3droid.service.JsonProducer;
 
 import java.io.*;
 import java.net.URI;
@@ -75,10 +75,7 @@ public class Bf3ServerCall implements SimpleHttpCallerCallback {
     }
 
     private void doJsonCallback(HttpResponse response) {
-        Reader reader = getJSONReader(response);
-        JsonParser parser = new JsonParser();
-        JsonObject jsonObject = parser.parse(reader).getAsJsonObject();
-        callback.onBf3CallSuccess(overviewStatsObject(jsonObject));
+        callback.onBf3CallSuccess(JsonProducer.jsonObjectFromResponse(response, "data"));
     }
 
     private void doStringCallback(HttpResponse response) {
@@ -101,22 +98,6 @@ public class Bf3ServerCall implements SimpleHttpCallerCallback {
     public void onSimpleHttpCallFailure(HttpResponse response) throws _403Exception {
         callback.onBf3CallFailure();
     }
-
-    private Reader getJSONReader(HttpResponse response) {
-        Reader reader = null;
-        try {
-            InputStream data = response.getEntity().getContent();
-            reader = new InputStreamReader(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return reader;
-    }
-
-    private JsonObject overviewStatsObject(JsonObject jsonObject) {
-        return jsonObject.getAsJsonObject("data");
-    }
-
     @SuppressWarnings("serial")
     public static class _403Exception extends IOException {
     }

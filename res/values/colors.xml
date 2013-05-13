@@ -11,9 +11,12 @@
   <color name="orange">#e7ab0a</color>
   <color name="official_blue">#E6F3FF</color>
   <color name="black">#000000</color>
+  <color name="alpha_black">#FF000000</color>
   <color name="white">#FFFFFF</color>
   <color name="alpha_white">#ffffffff</color>
   <color name="light_grey">#CCCCCC</color>
   <color name="red">#FF0000</color>
   <color name="white_grey">#EBEBEB</color>
+  <color name="alpha_light_blue">#ff30b2e2</color>
+  <color name="forum_thread_grey">#AAAAAA</color>
 </resources>

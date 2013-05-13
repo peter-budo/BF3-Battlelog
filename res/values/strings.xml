@@ -292,12 +292,17 @@
   <string name="info_xml_forums_none">No forums found.</string>
   <string name="info_xml_forums">Forums</string>
   <string name="info_p_activated_expansion">activated game/or expansion pack</string>
-  <string name="info_xml_forum_postsinthreads">&lt;b>{num_posts}&lt;/b> posts in &lt;b>{num_threads}&lt;/b> threads.
+  <string name="info_xml_forum_postsinthreads">&lt;b>{num_posts}&lt;/b> posts in &lt;b>{num_threads}&lt;/b> topics.
   </string>
   <string name="info_xml_threadinfo">&lt;b>{num_posts}&lt;/b> posts (whereof &lt;b>{num_official}&lt;/b> official)
   </string>
   <string name="info_xml_threaddate">Posted &lt;b>{date}&lt;/b> by &lt;b>{user}&lt;/b></string>
   <string name="info_xml_threadreplydate">Last post &lt;b>{date}&lt;/b> by &lt;b>{user}&lt;/b></string>
+  <string name="activity_forum_threads_title">Threads</string>
+  <string name="activity_forum_create_thread">Create new thread!</string>
+  <string name="activity_forum_hint_title">Your title here...</string>
+  <string name="activity_forum_hint_content">Your content here...</string>
+  <string name="activity_forum_loading">Loading...</string>
   <string name="info_xml_thread_new">New thread...</string>
   <string name="info_xml_post_new">New post...</string>
   <string name="info_forum_newthread_true">The thread has been created.</string>
@@ -319,7 +324,10 @@
   <string name="title_search">Searching through users and platoons</string>
   <string name="info_xml_search">Search...</string>
   <string name="info_xml_generic_error">An error has occurred.</string>
+  <string name="menu_forum_language_label">Selected language:</string>
   <string name="label_search">Search</string>
+  <string name="menu_forum_view_saved">View saved</string>
+  <string name="menu_forum_view_forums">View forums</string>
   <string name="label_search_ongoing">Searching...</string>
   <string name="info_p_awards">&lt;b>{username}&lt;/b> recieved new awards: {award}.</string>
   <string name="label_own_platoon">My platoons</string>

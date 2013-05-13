@@ -17,14 +17,11 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
 
-  <!-- #FFFFC600 -->
-
   <net.peterkuterna.android.apps.swipeytabs.SwipeyTabs
       android:id="@+id/swipeytabs"
-      android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
-      android:background="#FF000000"
-      swipeytabs:bottomBarColor="#ff30b2e2"
+      style="@style/MatchWidth"
+      android:background="@color/alpha_black"
+      swipeytabs:bottomBarColor="@color/alpha_light_blue"
       swipeytabs:bottomBarHeight="1.5dip"
       swipeytabs:tabIndicatorHeight="4.5dip"/>
 
@@ -33,6 +30,5 @@
       android:layout_width="fill_parent"
       android:layout_height="fill_parent"
       android:layout_below="@id/swipeytabs"/>
-  <!-- COM HERE -->
 
 </RelativeLayout>

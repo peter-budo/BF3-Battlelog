@@ -26,6 +26,7 @@ import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.*;
+
 import com.ninetwozero.bf3droid.R;
 import com.ninetwozero.bf3droid.adapter.ThreadListAdapter;
 import com.ninetwozero.bf3droid.asynctask.AsyncCreateNewThread;
@@ -40,399 +41,235 @@ import java.util.List;
 
 public class ForumFragment extends ListFragment implements DefaultFragment {
 
-    // Attributes
-    private Context mContext;
-    private LayoutInflater mLayoutInflater;
-    private SharedPreferences mSharedPreferences;
-    private ForumData mForumData;
-    private ForumClient mForumHandler;
+    private Context context;
+    private LayoutInflater inflater;
+    private SharedPreferences sharedPreferences;
+    private ForumData forumData;
+    private ForumClient forumHandler;
 
-    // Elements
-    private ListView mListView;
-    private ThreadListAdapter mListAdapter;
-    private TextView mTextTitle;
-    private RelativeLayout mWrapLoader;
-    private Button mButtonMore;
-    private Button mButtonPost;
-    private EditText mTextareaTitle;
-    private EditText mTextareaContent;
+    private ListView listView;
+    private ThreadListAdapter threadListAdapter;
+    private TextView textView;
+    private RelativeLayout wrapLoader;
+    private Button buttonMore;
+    private EditText textareaTitle;
+    private EditText textareaContent;
 
-    // Misc
-    private long mForumId;
-    private long mLatestRefresh;
-    private int mCurrentPage;
-    private boolean mLoadFresh;
-    private String mLocale;
-    private Intent mStoredRequest;
+    private long forumId;
+    private long lastRefresh;
+    private int currentPage;
+    private boolean loadFresh;
+    private String locale;
+    private Intent storedRequest;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        context = getActivity();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        this.inflater = inflater;
 
-        // Set our attributes
-        mContext = getActivity();
-        mSharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(mContext);
-        mLayoutInflater = inflater;
+        View view = this.inflater.inflate(R.layout.activity_forum, container, false);
+        locale = sharedPreferences.getString(Constants.SP_BL_FORUM_LOCALE, "en");
+        forumHandler = new ForumClient();
 
-        // Let's inflate & return the view
-        View view = mLayoutInflater.inflate(R.layout.activity_forum, container, false);
-
-        // Get the unlocks
-        mLocale = mSharedPreferences.getString(Constants.SP_BL_FORUM_LOCALE, "en");
-        mForumHandler = new ForumClient();
-
-        // Init the views
         initFragment(view);
-
-        // Return the view
         return view;
-
     }
 
     public void initFragment(View v) {
+        textView = (TextView) v.findViewById(R.id.text_title);
+        listView = (ListView) v.findViewById(android.R.id.list);
+        threadListAdapter = new ThreadListAdapter(context, null, inflater);
+        listView.setAdapter(threadListAdapter);
+        getActivity().registerForContextMenu(listView);
+        Button buttonPost = (Button) v.findViewById(R.id.button_new);
+        buttonMore = (Button) v.findViewById(R.id.button_more);
+        textareaTitle = (EditText) v.findViewById(R.id.textarea_title);
+        textareaContent = (EditText) v.findViewById(R.id.textarea_content);
 
-        // Setup the ListView
-        mTextTitle = (TextView) v.findViewById(R.id.text_title);
-        mListView = (ListView) v.findViewById(android.R.id.list);
-        mListView.setAdapter(mListAdapter = new ThreadListAdapter(mContext,
-                null, mLayoutInflater));
-        getActivity().registerForContextMenu(mListView);
-        mButtonPost = (Button) v.findViewById(R.id.button_new);
-        mButtonMore = (Button) v.findViewById(R.id.button_more);
-        mTextareaTitle = (EditText) v.findViewById(R.id.textarea_title);
-        mTextareaContent = (EditText) v.findViewById(R.id.textarea_content);
-
-        // Set the click listeners
-        mButtonMore.setOnClickListener(
-
-                new OnClickListener() {
-
-                    @Override
-                    public void onClick(View sv) {
-
-                        // Validate
-                        if ((mCurrentPage - 1) == mForumData.getNumPages()) {
-
-                            sv.setVisibility(View.GONE);
-
-                        }
-
-                        // Do the "get more"-thing
-                        new AsyncLoadMore(mContext, mForumId).execute(++mCurrentPage);
-
-                    }
-                }
-
-        );
-
-        // Let's set the onClick events
-        mButtonPost.setOnClickListener(new OnClickListener() {
-
+        buttonMore.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
-
-                // Let's get the content
-                String title = mTextareaTitle.getText().toString();
-                String content = mTextareaContent.getText().toString();
-
-                // Let's see
-                if ("".equals(title)) {
-
-                    Toast.makeText(mContext,
-                            "You need to enter a title for your thread.",
-                            Toast.LENGTH_SHORT).show();
-
-                } else if ("".equals(content)) {
-
-                    Toast.makeText(mContext,
-                            "You need to enter some content for your thread.",
-                            Toast.LENGTH_SHORT).show();
-
+            public void onClick(View sv) {
+                if ((currentPage - 1) == forumData.getNumPages()) {
+                    sv.setVisibility(View.GONE);
                 }
-
-                // Parse for the BBCODE!
-                content = BBCodeUtils.toBBCode(content, null);
-
-                // Ready... set... go!
-                new AsyncCreateNewThread(mContext, mForumId).execute(title,
-                        content, mSharedPreferences.getString(
-                        Constants.SP_BL_PROFILE_CHECKSUM, ""));
-
+                new AsyncLoadMore(context, forumId).execute(++currentPage);
             }
-
         });
 
-        // Last but not least, the loader
-        mWrapLoader = (RelativeLayout) v.findViewById(R.id.wrap_loader);
+        buttonPost.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String title = textareaTitle.getText().toString();
+                String content = textareaContent.getText().toString();
 
-        mCurrentPage = 1;
-        mLoadFresh = false;
+                if ("".equals(title)) {
+                    Toast.makeText(context, "You need to enter a title for your thread.", Toast.LENGTH_SHORT).show();
+                } else if ("".equals(content)) {
+                    Toast.makeText(context, "You need to enter some content for your thread.", Toast.LENGTH_SHORT).show();
+                }
 
-        // Do we have one?
-        if (mStoredRequest != null) {
+                content = BBCodeUtils.toBBCode(content, null);
 
-            openForum(mStoredRequest);
+                new AsyncCreateNewThread(context, forumId).execute(title,
+                        content, sharedPreferences.getString(
+                        Constants.SP_BL_PROFILE_CHECKSUM, ""));
+            }
+        });
 
+        wrapLoader = (RelativeLayout) v.findViewById(R.id.wrap_loader);
+        currentPage = 1;
+        loadFresh = false;
+
+        if (storedRequest != null) {
+            openForum(storedRequest);
         }
-
     }
 
     @Override
     public void onResume() {
-
         super.onResume();
         reload();
-
     }
 
     public void reload() {
-
-        // Do we have a forumId?
-        if (mForumId > 0) {
-
-            // Set it up
+        if (forumId > 0) {
             long now = System.currentTimeMillis() / 1000;
-
-            if (mForumData == null || mLoadFresh) {
-
-                new AsyncGetThreads(mContext, mListView).execute(mForumId);
-                mLoadFresh = false;
-
+            if (forumData == null || loadFresh) {
+                new AsyncGetThreads(context, listView).execute(forumId);
+                loadFresh = false;
             } else {
-
-                if ((mLatestRefresh + 300) < now) {
-
-                    new AsyncGetThreads(null, mListView).execute(mForumId);
-
+                if ((lastRefresh + 300) < now) {
+                    new AsyncGetThreads(null, listView).execute(forumId);
                 }
-
             }
-
-            // Save the latest refresh
-            mLatestRefresh = now;
-
+            lastRefresh = now;
         }
-
-    }
-
-    public void manualReload() {
-
-        // Set it up
-        mLatestRefresh = 0;
-        reload();
-
     }
 
     @Override
     public void onListItemClick(ListView l, View v, int pos, long id) {
-
-        // Always called from context one
         ForumActivity parent = (ForumActivity) getActivity();
-
-        // Let's open the forum
         parent.openThread(
-
-                new Intent().putExtra(
-
-                        "threadId", id
-
-                ).putExtra(
-
-                        "threadTitle", ((ForumThreadData) v.getTag()).getTitle()
-
-                )
-
-        );
-
+                new Intent().putExtra("threadId", id)
+                        .putExtra("threadTitle", ((ForumThreadData) v.getTag()).getTitle()
+                        ));
     }
 
     private class AsyncGetThreads extends AsyncTask<Long, Void, Boolean> {
-
-        // Attributes
         private Context context;
         private ListView list;
         private RotateAnimation rotateAnimation;
 
-        // Construct
         public AsyncGetThreads(Context c, ListView l) {
-
             context = c;
             list = l;
-
         }
 
         @Override
         protected void onPreExecute() {
-
             if (context != null) {
-
                 rotateAnimation = new RotateAnimation(0, 359,
                         Animation.RELATIVE_TO_SELF, 0.5f,
                         Animation.RELATIVE_TO_SELF, 0.5f);
                 rotateAnimation.setDuration(1600);
                 rotateAnimation.setRepeatCount(RotateAnimation.INFINITE);
-                mWrapLoader.setVisibility(View.VISIBLE);
-                mWrapLoader.findViewById(R.id.image_loader).setAnimation(
-                        rotateAnimation);
+                wrapLoader.setVisibility(View.VISIBLE);
+                wrapLoader.findViewById(R.id.image_loader).setAnimation(rotateAnimation);
                 rotateAnimation.start();
-
             }
-
         }
 
         @Override
         protected Boolean doInBackground(Long... arg0) {
-
             try {
-
-                mForumData = new ForumClient().getThreads(mLocale, arg0[0]);
-                return (mForumData != null);
-
+                forumData = new ForumClient().getThreads(locale, arg0[0]);
+                return (forumData != null);
             } catch (Exception ex) {
-
                 ex.printStackTrace();
                 return false;
-
             }
-
         }
 
         @Override
         protected void onPostExecute(Boolean results) {
-
             if (context != null) {
-
-                if (mForumData.getNumPages() > 1) {
-
-                    mButtonMore.setVisibility(View.VISIBLE);
-                    mButtonMore
-                            .setText(R.string.info_xml_feed_button_pagination);
-
+                if (forumData.getNumPages() > 1) {
+                    buttonMore.setVisibility(View.VISIBLE);
+                    buttonMore.setText(R.string.info_xml_feed_button_pagination);
                 } else {
-
-                    mButtonMore.setVisibility(View.GONE);
-
+                    buttonMore.setVisibility(View.GONE);
                 }
 
                 if (results) {
-
-                    mTextTitle.setText(mForumData.getTitle());
-                    ((ThreadListAdapter) list.getAdapter()).set(mForumData
-                            .getThreads());
-
-                    mListView.post(
-
-                            new Runnable() {
-
-                                @Override
-                                public void run() {
-
-                                    // Set the selection
-                                    mListView.setSelection(0);
-
-                                    // Hide it
-                                    mWrapLoader.setVisibility(View.GONE);
-                                    rotateAnimation.reset();
-
-                                }
-
-                            }
-
-                    );
-
+                    textView.setText(forumData.getTitle());
+                    ((ThreadListAdapter) list.getAdapter()).set(forumData.getThreads());
+                    listView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listView.setSelection(0);
+                            wrapLoader.setVisibility(View.GONE);
+                            rotateAnimation.reset();
+                        }
+                    });
                 }
-
             }
-
         }
-
     }
 
     private class AsyncLoadMore extends AsyncTask<Integer, Void, Boolean> {
-
-        // Attributes
         private Context context;
         private long forumId;
         private int page;
         private List<ForumThreadData> threads;
 
-        // Constructs
         public AsyncLoadMore(Context c, long f) {
-
             this.context = c;
             this.forumId = f;
-
         }
 
         @Override
         protected void onPreExecute() {
-
-            mButtonMore.setText(R.string.label_downloading);
-            mButtonMore.setEnabled(false);
+            buttonMore.setText(R.string.label_downloading);
+            buttonMore.setEnabled(false);
         }
 
         @Override
         protected Boolean doInBackground(Integer... arg0) {
-
             try {
-
                 page = arg0[0];
-                mForumHandler.setForumId(forumId);
-                threads = mForumHandler.getThreads(mLocale, page);
+                forumHandler.setForumId(forumId);
+                threads = forumHandler.getThreads(locale, page);
                 return true;
-
             } catch (Exception ex) {
-
                 ex.printStackTrace();
                 return false;
-
             }
-
         }
 
         @Override
         protected void onPostExecute(Boolean results) {
-
             if (context instanceof ForumActivity) {
-
                 if (results) {
-
-                    mListAdapter.add(threads);
-                    mButtonMore
-                            .setText(R.string.info_xml_feed_button_pagination);
-
+                    threadListAdapter.add(threads);
+                    buttonMore.setText(R.string.info_xml_feed_button_pagination);
                 } else {
-
-                    Toast.makeText(context,
-                            R.string.info_xml_threads_more_false,
-                            Toast.LENGTH_SHORT).show();
-
+                    Toast.makeText(context, R.string.info_xml_threads_more_false, Toast.LENGTH_SHORT).show();
                 }
-
-                mButtonMore.setEnabled(true);
-
+                buttonMore.setEnabled(true);
             }
-
         }
-
     }
 
     public void openForum(Intent data) {
-
-        if (mTextTitle == null) {
-
-            mStoredRequest = data;
-
+        if (textView == null) {
+            storedRequest = data;
         } else {
-
-            mForumId = data.getLongExtra("forumId", 0);
-            mTextTitle.setText(data.getStringExtra("forumTitle"));
-            mLoadFresh = true;
+            forumId = data.getLongExtra("forumId", 0);
+            textView.setText(data.getStringExtra("forumTitle"));
+            loadFresh = true;
             reload();
-
         }
-
     }
 
     @Override
@@ -444,5 +281,4 @@ public class ForumFragment extends ListFragment implements DefaultFragment {
     public boolean handleSelectedOption(MenuItem item) {
         return false;
     }
-
 }

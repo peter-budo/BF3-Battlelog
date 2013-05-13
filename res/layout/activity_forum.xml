@@ -18,8 +18,7 @@
 
   <RelativeLayout
       android:id="@+id/wrap_top"
-      android:layout_width="fill_parent"
-      android:layout_height="fill_parent"
+      style="@style/Match"
       android:layout_marginBottom="40dp"
       android:padding="10dp">
 
@@ -38,7 +37,7 @@
         android:layout_marginBottom="0dp"
         android:layout_marginTop="0dp"
         android:padding="5dp"
-        android:text="Threads"/>
+        android:text="@string/activity_forum_threads_title"/>
 
     <ListView
         android:id="@android:id/list"
@@ -109,7 +108,7 @@
           android:layout_alignParentBottom="true"
           android:layout_centerHorizontal="true"
           android:layout_marginTop="5dp"
-          android:text="Create new thread!"/>
+          android:text="@string/activity_forum_create_thread"/>
 
       <EditText
           android:id="@+id/textarea_title"
@@ -117,7 +116,7 @@
           android:layout_height="wrap_content"
           android:layout_alignParentTop="true"
           android:gravity="left|top"
-          android:hint="Your title here..."
+          android:hint="@string/activity_forum_hint_title"
           android:singleLine="true"/>
 
       <EditText
@@ -128,7 +127,7 @@
           android:layout_below="@id/textarea_title"
           android:layout_marginTop="5dp"
           android:gravity="left|top"
-          android:hint="Your content here..."/>
+          android:hint="@string/activity_forum_hint_content"/>
     </RelativeLayout>
   </SlidingDrawer>
 
@@ -157,7 +156,7 @@
           android:id="@+id/text_loader"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="Loading..."/>
+          android:text="@string/activity_forum_loading"/>
     </LinearLayout>
   </RelativeLayout>
 

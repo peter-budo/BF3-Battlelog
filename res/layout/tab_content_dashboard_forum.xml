@@ -44,7 +44,7 @@
           android:id="@+id/string000"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="Selected language:"
+          android:text="@string/menu_forum_language_label"
           android:textSize="18sp"/>
 
       <com.ninetwozero.bf3droid.datatype.MarqueeTextView
@@ -76,12 +76,12 @@
       <Button
           android:id="@+id/button_view"
           style="@style/MenuButton"
-          android:text="View forums"/>
+          android:text="@string/menu_forum_view_forums"/>
 
       <Button
           android:id="@+id/button_saved"
           style="@style/MenuButton"
-          android:text="View saved"/>
+          android:text="@string/menu_forum_view_saved"/>
 
       <Button
           android:id="@+id/button_search"

@@ -28,105 +28,65 @@ import java.util.List;
 
 public class ForumListAdapter extends BaseAdapter {
 
-    // Attributes
     private Context context;
     private List<ForumData> itemArray;
     private LayoutInflater layoutInflater;
 
-    // Construct
-    public ForumListAdapter(Context c, List<ForumData> m,
-                            LayoutInflater l) {
-
+    public ForumListAdapter(Context c, List<ForumData> m, LayoutInflater l) {
         context = c;
         itemArray = m;
         layoutInflater = l;
-
     }
 
     @Override
     public int getCount() {
-
         return (itemArray != null) ? itemArray.size() : 0;
-
     }
 
     @Override
     public ForumData getItem(int position) {
-
         return this.itemArray.get(position);
-
     }
 
     @Override
     public long getItemId(int position) {
-
         return this.itemArray.get(position).getForumId();
-
     }
 
     @Override
     public int getItemViewType(int position) {
-
         return 0;
-
     }
 
     @Override
     public int getViewTypeCount() {
-
         return 1;
-
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-        // Get the current item
         ForumData currentItem = getItem(position);
 
-        // Recycle
         if (convertView == null) {
-
-            convertView = layoutInflater.inflate(R.layout.list_item_forum,
-                    parent, false);
-
+            convertView = layoutInflater.inflate(R.layout.list_item_forum, parent, false);
         }
 
-        // Set the TextViews
-        ((TextView) convertView.findViewById(R.id.string_title))
-                .setText(currentItem.getTitle());
-        ((TextView) convertView.findViewById(R.id.string_desc))
-                .setText(currentItem.getDescription());
+        ((TextView) convertView.findViewById(R.id.string_title)).setText(currentItem.getTitle());
+        ((TextView) convertView.findViewById(R.id.string_desc)).setText(currentItem.getDescription());
         ((TextView) convertView.findViewById(R.id.string_info)).setText(
-
                 Html.fromHtml(
-
-                        context.getString(R.string.info_xml_forum_postsinthreads).replace(
-
-                                "{num_posts}", currentItem.getNumPosts() + ""
-
-                        ).replace(
-
-                                "{num_threads}", currentItem.getNumThreads() + ""
-
-                        )
-
+                        context.getString(R.string.info_xml_forum_postsinthreads)
+                                .replace("{num_posts}", currentItem.getNumPosts() + "")
+                                .replace("{num_threads}", currentItem.getNumThreads() + "")
                 )
-
         );
-
-        // Store the object
         convertView.setTag(currentItem);
-
         return convertView;
 
     }
 
     public void setItemArray(List<ForumData> array) {
-
         this.itemArray = array;
         this.notifyDataSetInvalidated();
-
     }
-
 }
