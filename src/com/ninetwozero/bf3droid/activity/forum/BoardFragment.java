@@ -129,6 +129,7 @@ public class BoardFragment extends ListFragment implements DefaultFragment {
         @Override
         protected Boolean doInBackground(Void... arg0) {
             try {
+                /*TODO provide custom adapter and layout to accomodate forum header section and forum listings */
                 ForumCategories forumCategories = new ForumClient().getForums(locale);
                 title = "";//(String) result[0];
                 forumsList = new ArrayList<ForumData>();//(List<ForumData>) result[1];
