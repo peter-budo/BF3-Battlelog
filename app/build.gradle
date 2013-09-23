@@ -24,7 +24,7 @@ dependencies {
 
 android {
     compileSdkVersion 8
-    buildToolsVersion "18.0.1"
+    buildToolsVersion "18.1.0"
 
     defaultConfig {
         packageName "com.ninetwozero.bf3droid"
